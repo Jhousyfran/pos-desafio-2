@@ -1,0 +1,120 @@
+version: "3.9"
+
+services:
+  postgres-auth:
+    container_name: postgres-auth
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: auth_user
+      POSTGRES_PASSWORD: auth_pass
+      POSTGRES_DB: auth_db
+    volumes:
+      - auth-db-data:/var/lib/postgresql/data
+      - ./auth-service/db/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    ports:
+      - "5432:5432"
+
+  postgres-app:
+    container_name: postgres-app
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: app_user
+      POSTGRES_PASSWORD: app_pass
+      POSTGRES_DB: app_db
+    volumes:
+      - app-db-data:/var/lib/postgresql/data
+      - ./flag-service/db/init.sql:/docker-entrypoint-initdb.d/flag-init.sql:ro
+      - ./targeting-service/db/init.sql:/docker-entrypoint-initdb.d/targeting-init.sql:ro
+    ports:
+      - "5433:5432"
+
+  redis:
+    container_name: redis
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+
+  dynamodb-local:
+    container_name: dynamodb-local
+    image: amazon/dynamodb-local:latest
+    command: "-jar DynamoDBLocal.jar -sharedDb -dbPath /home/dynamodblocal/data"
+    volumes:
+      - dynamodb-data:/home/dynamodblocal/data
+    ports:
+      - "8000:8000"
+
+  auth-service:
+    container_name: app_auth-service
+    build: ./auth-service
+    environment:
+      PORT: "8001"
+      DATABASE_URL: "postgres://auth_user:auth_pass@postgres-auth:5432/auth_db?sslmode=disable"
+      MASTER_KEY: "admin-secreto-123"
+    depends_on:
+      - postgres-auth
+    ports:
+      - "8001:8001"
+
+  flag-service:
+    container_name: app_flag-service
+    build: ./flag-service
+    environment:
+      PORT: "8002"
+      DATABASE_URL: "postgres://app_user:app_pass@postgres-app:5432/app_db?sslmode=disable"
+      AUTH_SERVICE_URL: "http://auth-service:8001"
+    depends_on:
+      - postgres-app
+      - auth-service
+    ports:
+      - "8002:8002"
+
+  targeting-service:
+    container_name: app_targeting-service
+    build: ./targeting-service
+    environment:
+      PORT: "8003"
+      DATABASE_URL: "postgres://app_user:app_pass@postgres-app:5432/app_db?sslmode=disable"
+      AUTH_SERVICE_URL: "http://auth-service:8001"
+    depends_on:
+      - postgres-app
+      - auth-service
+    ports:
+      - "8003:8003"
+
+  evaluation-service:
+    container_name: app_evaluation-service
+    build: ./evaluation-service
+    environment:
+      PORT: "8004"
+      REDIS_URL: "redis://redis:6379"
+      FLAG_SERVICE_URL: "http://flag-service:8002"
+      TARGETING_SERVICE_URL: "http://targeting-service:8003"
+      SERVICE_API_KEY: "SUA_CHAVE_DE_SERVICO"
+      AWS_SQS_URL: ""
+      AWS_REGION: "us-east-1"
+    depends_on:
+      - redis
+      - flag-service
+      - targeting-service
+    ports:
+      - "8004:8004"
+
+  analytics-service:
+    container_name: app_analytics-service
+    build: ./analytics-service
+    environment:
+      PORT: "8005"
+      AWS_REGION: "us-east-1"
+      AWS_SQS_URL: "https://sqs.us-east-1.amazonaws.com/123456789012/sua-fila"
+      AWS_DYNAMODB_TABLE: "ToggleMasterAnalytics"
+      AWS_ACCESS_KEY_ID: "dummy"
+      AWS_SECRET_ACCESS_KEY: "dummy"
+    depends_on:
+      - dynamodb-local
+    ports:
+      - "8005:8005"
+
+volumes:
+  auth-db-data:
+  app-db-data:
+  dynamodb-data:
