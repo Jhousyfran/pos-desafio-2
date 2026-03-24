@@ -109,3 +109,23 @@ module "elasticache" {
     }
   ]
 }
+
+module "dynamodb" {
+  source  = "./modules/dynamodb"
+  prefix  = var.prefix
+  project = var.project
+  tags    = local.tags
+
+  dynamodb_table = {
+    name           = "ToggleMasterAnalytics"
+    billing_mode   = "PROVISIONED"
+    read_capacity  = 20
+    write_capacity = 20
+    attribute_definitions = [
+      {
+        name = "event_id"
+        type = "S"
+      }
+    ]
+  }
+}
