@@ -163,6 +163,11 @@ resource "kubernetes_namespace_v1" "argocd" {
   }
 }
 
+resource "random_password" "argocd_server_secretkey" {
+  length  = 32
+  special = false
+}
+
 resource "helm_release" "argocd" {
   name         = "argocd"
   repository   = "https://argoproj.github.io/argo-helm"
@@ -179,11 +184,19 @@ resource "helm_release" "argocd" {
         domain = var.argocd_domain
       }
       configs = {
+        secret = {
+          createSecret = true
+          argocdServerSecretkey = random_password.argocd_server_secretkey.result
+        }
         cm = {
-          url = "https://${var.argocd_domain}"
+          url                  = "https://${var.argocd_domain}"
+          "accounts.terraform" = "apiKey, login"
         }
         params = {
           "server.insecure" = "true"
+        }
+        rbac = {
+          "policy.csv" = "g, terraform, role:admin"
         }
       }
       server = {
