@@ -17,8 +17,8 @@ spec:
     spec:
       containers:
         - name: flag-service
-          image: REPLACE_ME_FLAG_SERVICE_IMAGE
-          imagePullPolicy: IfNotPresent
+          image: 629617923234.dkr.ecr.us-east-1.amazonaws.com/flag-service:latest
+          imagePullPolicy: Always
           ports:
             - containerPort: 8002
           envFrom:

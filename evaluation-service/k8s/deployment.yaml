@@ -17,8 +17,8 @@ spec:
     spec:
       containers:
         - name: evaluation-service
-          image: REPLACE_ME_EVALUATION_SERVICE_IMAGE
-          imagePullPolicy: IfNotPresent
+          image: 629617923234.dkr.ecr.us-east-1.amazonaws.com/evaluation-service:latest
+          imagePullPolicy: Always
           ports:
             - containerPort: 8004
           envFrom:
