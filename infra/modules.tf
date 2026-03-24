@@ -88,5 +88,24 @@ module "databases" {
       username       = "appuser"
     }
   ]
+}
 
+module "elasticache" {
+  source  = "./modules/elasticache"
+  prefix  = var.prefix
+  project = var.project
+  tags    = local.tags
+
+  subnet_ids = [module.network.eks_subnet_private_1a_id, module.network.eks_subnet_private_1b_id]
+  cache_config = [
+    {
+      name                 = "redis-cache"
+      engine               = "redis"
+      engine_version       = "6.x"
+      node_type            = "cache.t3.micro"
+      num_cache_nodes      = 1
+      parameter_group_name = "default.redis6.x"
+      port                 = 6379
+    }
+  ]
 }
