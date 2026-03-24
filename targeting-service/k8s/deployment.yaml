@@ -24,3 +24,5 @@ spec:
           envFrom:
             - configMapRef:
                 name: targeting-service-config
+            - secretRef:
+                name: targeting-service-secrets

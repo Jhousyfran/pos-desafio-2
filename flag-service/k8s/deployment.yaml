@@ -24,3 +24,5 @@ spec:
           envFrom:
             - configMapRef:
                 name: flag-service-config
+            - secretRef:
+                name: flag-service-secrets

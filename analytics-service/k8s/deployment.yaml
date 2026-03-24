@@ -24,3 +24,5 @@ spec:
           envFrom:
             - configMapRef:
                 name: analytics-service-config
+            - secretRef:
+                name: analytics-service-secrets
