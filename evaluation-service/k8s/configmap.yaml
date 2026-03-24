@@ -5,12 +5,12 @@ metadata:
   namespace: evaluation-service
 data:
   PORT: "8004"
-  REDIS_URL: "redis://REPLACE_ME_REDIS_ENDPOINT:6379"
+  REDIS_URL: "redis://redis-cache-cluster.ln0uci.0001.use1.cache.amazonaws.com:6379"
   FLAG_SERVICE_URL: "http://flag-service.flag-service.svc.cluster.local:8002"
   TARGETING_SERVICE_URL: "http://targeting-service.targeting-service.svc.cluster.local:8003"
-  SERVICE_API_KEY: "REPLACE_ME_SERVICE_API_KEY"
-  AWS_SQS_URL: "REPLACE_ME_SQS_URL"
+  # SERVICE_API_KEY: "REPLACE_ME_SERVICE_API_KEY"
+  AWS_SQS_URL: "https://sqs.us-east-1.amazonaws.com/629617923234/analytics-queue-sqs-queue"
   AWS_REGION: "us-east-1"
-  AWS_SQS_ENDPOINT: "REPLACE_ME_SQS_ENDPOINT"
-  AWS_ACCESS_KEY_ID: "REPLACE_ME_ACCESS_KEY_ID"
-  AWS_SECRET_ACCESS_KEY: "REPLACE_ME_SECRET_ACCESS_KEY"
+  # AWS_SQS_ENDPOINT: "REPLACE_ME_SQS_ENDPOINT"
+  # AWS_ACCESS_KEY_ID: "REPLACE_ME_ACCESS_KEY_ID"
+  # AWS_SECRET_ACCESS_KEY: "REPLACE_ME_SECRET_ACCESS_KEY"
