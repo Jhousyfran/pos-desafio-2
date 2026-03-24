@@ -53,3 +53,40 @@ module "ecr_repositories" {
   ]
 
 }
+
+module "databases" {
+  source  = "./modules/rds"
+  prefix  = var.prefix
+  project = var.project
+  tags    = local.tags
+
+  subnet_ids = [module.network.eks_subnet_private_1a_id, module.network.eks_subnet_private_1b_id]
+  dbs_config = [
+    {
+      name           = "auth"
+      engine         = "postgres"
+      version        = "17.2"
+      storage        = 10
+      instance_class = "db.t3.micro"
+      username       = "appuser"
+    },
+    {
+      name           = "flag"
+      engine         = "postgres"
+      version        = "17.2"
+      storage        = 20
+      instance_class = "db.t3.micro"
+      username       = "appuser"
+    },
+
+    {
+      name           = "targeting"
+      engine         = "postgres"
+      version        = "17.2"
+      storage        = 20
+      instance_class = "db.t3.micro"
+      username       = "appuser"
+    }
+  ]
+
+}
