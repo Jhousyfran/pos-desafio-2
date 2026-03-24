@@ -129,3 +129,30 @@ module "dynamodb" {
     ]
   }
 }
+
+
+module "sqs" {
+  source  = "./modules/sqs"
+  prefix  = var.prefix
+  project = var.project
+  tags    = local.tags
+
+  queues = [
+    {
+      name                      = "analytics-queue"
+      delay_seconds             = 0
+      max_message_size          = 262144
+      message_retention_seconds = 345600
+    }
+  ]
+
+}
+
+
+module "addons-eks" {
+  source  = "./modules/addons-eks"
+  project = var.project
+  tags    = local.tags
+
+  eks_cluster_name = module.eks_cluster.eks_cluster_name
+}
