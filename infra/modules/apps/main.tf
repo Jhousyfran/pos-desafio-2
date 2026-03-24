@@ -48,3 +48,55 @@ resource "argocd_application" "apps" {
     kubernetes_namespace_v1.apps
   ]
 }
+
+resource "kubernetes_manifest" "apps_ingress" {
+  for_each = local.apps_by_name
+
+  manifest = {
+    apiVersion = "networking.k8s.io/v1"
+    kind       = "Ingress"
+    metadata = {
+      name      = "${each.value.name}-ingress"
+      namespace = each.value.namespace
+      annotations = {
+        "alb.ingress.kubernetes.io/group.name"        = var.apps_alb_group_name
+        "alb.ingress.kubernetes.io/scheme"            = "internet-facing"
+        "alb.ingress.kubernetes.io/target-type"       = "ip"
+        "alb.ingress.kubernetes.io/listen-ports"      = "[{\"HTTPS\":443}]"
+        "alb.ingress.kubernetes.io/ssl-redirect"      = "443"
+        "alb.ingress.kubernetes.io/backend-protocol"  = "HTTP"
+        "alb.ingress.kubernetes.io/healthcheck-path"  = "/health"
+        "alb.ingress.kubernetes.io/certificate-arn"   = var.apps_certificate_arn
+        "external-dns.alpha.kubernetes.io/hostname"   = var.apps_domain
+      }
+    }
+    spec = {
+      ingressClassName = "alb"
+      rules = [
+        {
+          host = var.apps_domain
+          http = {
+            paths = [
+              {
+                path     = each.value.path_prefix
+                pathType = "Prefix"
+                backend = {
+                  service = {
+                    name = each.value.name
+                    port = {
+                      number = each.value.port
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+
+  depends_on = [
+    kubernetes_namespace_v1.apps
+  ]
+}

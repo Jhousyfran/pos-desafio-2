@@ -43,6 +43,11 @@ variable "argocd_domain" {
   type        = string
 }
 
+variable "apps_domain" {
+  description = "Dominio completo para as apps (ex: desafio.exemplo.com)"
+  type        = string
+}
+
 variable "argocd_server_addr" {
   description = "Endereco do ArgoCD (ex: https://argocd.exemplo.com)"
   type        = string

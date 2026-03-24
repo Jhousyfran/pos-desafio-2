@@ -31,3 +31,8 @@ variable "argocd_domain" {
   description = "Dominio completo para o ArgoCD (ex: argocd.exemplo.com)"
   type        = string
 }
+
+variable "apps_domain" {
+  description = "Dominio completo para as apps (ex: desafio.exemplo.com)"
+  type        = string
+}

@@ -158,38 +158,51 @@ module "addons-eks" {
   oidc             = module.eks_cluster.oidc
   route53_zone_id  = var.route53_zone_id
   argocd_domain    = var.argocd_domain
+  apps_domain      = var.apps_domain
 }
 
 module "apps" {
   source = "./modules/apps"
 
   argocd_repo_url = var.argocd_repo_url
+  apps_domain     = var.apps_domain
+  apps_certificate_arn = module.addons-eks.apps_certificate_arn
 
   apps = [
     {
-      name      = "auth-service"
-      namespace = "auth-service"
-      path      = "auth-service/k8s"
+      name        = "auth-service"
+      namespace   = "auth-service"
+      path        = "auth-service/k8s"
+      path_prefix = "/auth"
+      port        = 8001
     },
     {
-      name      = "flag-service"
-      namespace = "flag-service"
-      path      = "flag-service/k8s"
+      name        = "flag-service"
+      namespace   = "flag-service"
+      path        = "flag-service/k8s"
+      path_prefix = "/flag"
+      port        = 8002
     },
     {
-      name      = "targeting-service"
-      namespace = "targeting-service"
-      path      = "targeting-service/k8s"
+      name        = "targeting-service"
+      namespace   = "targeting-service"
+      path        = "targeting-service/k8s"
+      path_prefix = "/targeting"
+      port        = 8003
     },
     {
-      name      = "evaluation-service"
-      namespace = "evaluation-service"
-      path      = "evaluation-service/k8s"
+      name        = "evaluation-service"
+      namespace   = "evaluation-service"
+      path        = "evaluation-service/k8s"
+      path_prefix = "/evaluation"
+      port        = 8004
     },
     {
-      name      = "analytics-service"
-      namespace = "analytics-service"
-      path      = "analytics-service/k8s"
+      name        = "analytics-service"
+      namespace   = "analytics-service"
+      path        = "analytics-service/k8s"
+      path_prefix = "/analytics"
+      port        = 8005
     }
   ]
 }

@@ -6,9 +6,11 @@ variable "argocd_repo_url" {
 variable "apps" {
   description = "Lista de apps para deploy via ArgoCD"
   type = list(object({
-    name      = string
-    namespace = string
-    path      = string
+    name        = string
+    namespace   = string
+    path        = string
+    path_prefix = string
+    port        = number
   }))
 }
 
@@ -22,4 +24,20 @@ variable "target_revision" {
   description = "Branch/tag/commit para o ArgoCD"
   type        = string
   default     = "HEAD"
+}
+
+variable "apps_domain" {
+  description = "Dominio completo para as apps"
+  type        = string
+}
+
+variable "apps_certificate_arn" {
+  description = "ARN do certificado ACM para o host das apps"
+  type        = string
+}
+
+variable "apps_alb_group_name" {
+  description = "Nome do grupo do ALB para compartilhar o mesmo load balancer"
+  type        = string
+  default     = "desafio"
 }
