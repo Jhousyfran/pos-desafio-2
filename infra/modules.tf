@@ -97,6 +97,8 @@ module "elasticache" {
   tags    = local.tags
 
   subnet_ids = [module.network.eks_subnet_private_1a_id, module.network.eks_subnet_private_1b_id]
+  vpc_id          = module.network.vpc_id
+  vpc_cidr_block  = var.cidr_block
   cache_config = [
     {
       name                 = "redis-cache"
