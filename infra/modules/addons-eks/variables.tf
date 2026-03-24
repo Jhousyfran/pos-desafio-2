@@ -16,3 +16,18 @@ variable "eks_cluster_name" {
   type        = string
 
 }
+
+variable "oidc" {
+  description = "OIDC issuer do cluster EKS"
+  type        = string
+}
+
+variable "route53_zone_id" {
+  description = "Hosted Zone ID do Route53 para o dominio do ArgoCD"
+  type        = string
+}
+
+variable "argocd_domain" {
+  description = "Dominio completo para o ArgoCD (ex: argocd.exemplo.com)"
+  type        = string
+}
