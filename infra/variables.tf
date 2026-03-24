@@ -33,4 +33,34 @@ variable "cidr_block" {
   type        = string
 }
 
+variable "route53_zone_id" {
+  description = "Hosted Zone ID do Route53 para o dominio do ArgoCD"
+  type        = string
+}
 
+variable "argocd_domain" {
+  description = "Dominio completo para o ArgoCD (ex: argocd.exemplo.com)"
+  type        = string
+}
+
+variable "argocd_server_addr" {
+  description = "Endereco do ArgoCD (ex: https://argocd.exemplo.com)"
+  type        = string
+}
+
+variable "argocd_auth_token" {
+  description = "Token de autenticacao para o provider do ArgoCD"
+  type        = string
+  sensitive   = true
+}
+
+variable "argocd_insecure" {
+  description = "Permitir TLS inseguro no provider do ArgoCD"
+  type        = bool
+  default     = true
+}
+
+variable "argocd_repo_url" {
+  description = "Repositorio Git com os manifests das apps"
+  type        = string
+}

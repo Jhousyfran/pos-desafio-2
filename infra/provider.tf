@@ -12,6 +12,14 @@ terraform {
       source  = "hashicorp/helm"
       version = "3.1.1"
     }
+    argocd = {
+      source  = "argoproj-labs/argocd"
+      version = "7.0.1"
+    }
+    random = {
+      source  = "hashicorp/random"
+      version = "3.6.3"
+    }
   }
 }
 
@@ -40,4 +48,15 @@ provider "helm" {
       command     = "aws"
     }
   }
+}
+
+locals {
+  argocd_server_addr_raw = replace(replace(var.argocd_server_addr, "https://", ""), "http://", "")
+  argocd_server_addr     = can(regex(":[0-9]+$", local.argocd_server_addr_raw)) ? local.argocd_server_addr_raw : "${local.argocd_server_addr_raw}:443"
+}
+
+provider "argocd" {
+  server_addr = local.argocd_server_addr
+  auth_token  = var.argocd_auth_token
+  insecure    = var.argocd_insecure
 }

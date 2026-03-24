@@ -155,4 +155,41 @@ module "addons-eks" {
   tags    = local.tags
 
   eks_cluster_name = module.eks_cluster.eks_cluster_name
+  oidc             = module.eks_cluster.oidc
+  route53_zone_id  = var.route53_zone_id
+  argocd_domain    = var.argocd_domain
+}
+
+module "apps" {
+  source = "./modules/apps"
+
+  argocd_repo_url = var.argocd_repo_url
+
+  apps = [
+    {
+      name      = "auth-service"
+      namespace = "auth-service"
+      path      = "auth-service/k8s"
+    },
+    {
+      name      = "flag-service"
+      namespace = "flag-service"
+      path      = "flag-service/k8s"
+    },
+    {
+      name      = "targeting-service"
+      namespace = "targeting-service"
+      path      = "targeting-service/k8s"
+    },
+    {
+      name      = "evaluation-service"
+      namespace = "evaluation-service"
+      path      = "evaluation-service/k8s"
+    },
+    {
+      name      = "analytics-service"
+      namespace = "analytics-service"
+      path      = "analytics-service/k8s"
+    }
+  ]
 }
