@@ -5,5 +5,4 @@ metadata:
   namespace: targeting-service
 data:
   PORT: "8003"
-  DATABASE_URL: "postgres://app_user:app_pass@postgres-app:5432/app_db?sslmode=disable"
   AUTH_SERVICE_URL: "http://auth-service.auth-service.svc.cluster.local:8001"
