@@ -37,3 +37,19 @@ module "eks_loadbalancer_controller" {
   eks_cluster_name = module.eks_cluster.eks_cluster_name
 
 }
+
+module "ecr_repositories" {
+  source  = "./modules/ecr"
+  prefix  = var.prefix
+  project = var.project
+  tags    = local.tags
+
+  repos = [
+    "auth-service",
+    "flag-service",
+    "targeting-service",
+    "evaluation-service",
+    "analytics-service"
+  ]
+
+}
