@@ -61,6 +61,8 @@ module "databases" {
   tags    = local.tags
 
   subnet_ids = [module.network.eks_subnet_private_1a_id, module.network.eks_subnet_private_1b_id]
+  vpc_id         = module.network.vpc_id
+  vpc_cidr_block = var.cidr_block
   dbs_config = [
     {
       name           = "auth"
@@ -168,7 +170,7 @@ module "apps" {
 
   argocd_repo_url = var.argocd_repo_url
   apps_domain     = var.apps_domain
-  apps_certificate_arn = module.addons-eks.apps_certificate_arn
+  depends_on      = [module.addons-eks]
 
   apps = [
     {
