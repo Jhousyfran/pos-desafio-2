@@ -72,6 +72,8 @@ PY
   echo "SERVICE_API_KEY definida para esta execucao."
 fi
 
+echo "Chave de API: $SERVICE_API_KEY"
+
 RAND_SUFFIX="$(date +%s)-$RANDOM"
 FLAG_NAME="enable-new-dashboard-$RAND_SUFFIX"
 
@@ -96,5 +98,6 @@ if [ "$RULE_STATUS" != "201" ]; then
 fi
 
 echo "Testando avaliacao (user_id=$USER_ID)..."
+echo "Endpoint: $EVAL_URL/evaluate?user_id=$USER_ID&flag_name=$FLAG_NAME"
 curl -fsS "$EVAL_URL/evaluate?user_id=$USER_ID&flag_name=$FLAG_NAME"
 echo

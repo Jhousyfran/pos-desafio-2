@@ -7,7 +7,7 @@ spec:
   scaleTargetRef:
     name: analytics-service
   minReplicaCount: 0
-  maxReplicaCount: 5
+  maxReplicaCount: 2
   triggers:
     - type: aws-sqs-queue
       metadata:
