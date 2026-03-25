@@ -30,10 +30,17 @@ spec:
           volumeMounts:
             - name: db-init
               mountPath: /migrations
-      containers:
-        - name: flag-service
-          image: 629617923234.dkr.ecr.us-east-1.amazonaws.com/flag-service:latest
-          imagePullPolicy: Always
+          containers:
+            - name: flag-service
+              image: 629617923234.dkr.ecr.us-east-1.amazonaws.com/flag-service:latest
+              imagePullPolicy: Always
+              resources:
+                requests:
+                  cpu: "100m"
+                  memory: "100Mi"
+                limits:
+                  cpu: "200m"
+                  memory: "250Mi"
           ports:
             - containerPort: 8002
           envFrom:
