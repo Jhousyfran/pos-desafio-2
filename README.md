@@ -6,9 +6,8 @@ Gravei um walkthrough em vídeo mostrando a implantação e o fluxo end-to-end. 
 
 - Link direto: https://www.loom.com/share/2fc9fb3f129f475fb07b10303435cbc0
 
-Incorporação (nem todos os renderizadores de README exibem iframes; use o link acima se não aparecer):
+... (nem todos os renderizadores de README exibem iframes; use o link acima se não aparecer):
 
-<iframe src="https://www.loom.com/embed/2fc9fb3f129f475fb07b10303435cbc0" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
 
 Esse repositório reúne a solução da **Fase 2 do Tech Challenge**: transformar o MVP monolítico gerado na Fase 1 em um ecossistema de microsserviços distribuído, todos provisionados e orquestrados na AWS usando EKS, infra como código em Terraform e boas práticas de observabilidade e escalabilidade.
 
