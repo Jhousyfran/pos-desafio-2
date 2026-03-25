@@ -15,6 +15,21 @@ spec:
       labels:
         app: flag-service
     spec:
+      initContainers:
+        - name: db-init
+          image: postgres:15-alpine
+          command:
+            - sh
+            - -c
+            - psql "$DATABASE_URL" -f /migrations/init.sql
+          envFrom:
+            - configMapRef:
+                name: flag-service-config
+            - secretRef:
+                name: flag-service-secrets
+          volumeMounts:
+            - name: db-init
+              mountPath: /migrations
       containers:
         - name: flag-service
           image: 629617923234.dkr.ecr.us-east-1.amazonaws.com/flag-service:latest
@@ -42,3 +57,7 @@ spec:
             periodSeconds: 20
             timeoutSeconds: 2
             failureThreshold: 3
+      volumes:
+        - name: db-init
+          configMap:
+            name: flag-service-db-init

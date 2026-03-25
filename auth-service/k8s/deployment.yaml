@@ -15,6 +15,21 @@ spec:
       labels:
         app: auth-service
     spec:
+      initContainers:
+        - name: db-init
+          image: postgres:15-alpine
+          command:
+            - sh
+            - -c
+            - psql "$DATABASE_URL" -f /migrations/init.sql
+          envFrom:
+            - configMapRef:
+                name: auth-service-config
+            - secretRef:
+                name: auth-service-secrets
+          volumeMounts:
+            - name: db-init
+              mountPath: /migrations
       containers:
         - name: auth-service
           image: 629617923234.dkr.ecr.us-east-1.amazonaws.com/auth-service:latest
@@ -42,3 +57,7 @@ spec:
             periodSeconds: 20
             timeoutSeconds: 2
             failureThreshold: 3
+      volumes:
+        - name: db-init
+          configMap:
+            name: auth-service-db-init
