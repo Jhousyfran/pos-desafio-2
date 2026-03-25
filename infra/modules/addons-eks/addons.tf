@@ -67,6 +67,94 @@ resource "aws_acm_certificate_validation" "apps" {
   validation_record_fqdns = [for record in aws_route53_record.apps_validation : record.fqdn]
 }
 
+resource "kubernetes_namespace_v1" "ingress_nginx" {
+  metadata {
+    name = "ingress-nginx"
+  }
+}
+
+resource "helm_release" "ingress_nginx" {
+  name       = "ingress-nginx"
+  repository = "https://kubernetes.github.io/ingress-nginx"
+  chart      = "ingress-nginx"
+  version    = "4.10.1"
+  namespace  = "ingress-nginx"
+
+  set = [
+    {
+      name  = "controller.service.type"
+      value = "LoadBalancer"
+    },
+    {
+      name  = "controller.service.externalTrafficPolicy"
+      value = "Cluster"
+    },
+    {
+      name  = "controller.ingressClassResource.name"
+      value = "nginx"
+    },
+    {
+      name  = "controller.ingressClass"
+      value = "nginx"
+    },
+    {
+      name  = "controller.service.annotations.service\\.beta\\.kubernetes\\.io/aws-load-balancer-type"
+      value = "nlb"
+    },
+    {
+      name  = "controller.service.annotations.service\\.beta\\.kubernetes\\.io/aws-load-balancer-nlb-target-type"
+      value = "ip"
+    },
+    {
+      name  = "controller.service.annotations.service\\.beta\\.kubernetes\\.io/aws-load-balancer-scheme"
+      value = "internet-facing"
+    },
+    {
+      name  = "controller.service.annotations.service\\.beta\\.kubernetes\\.io/aws-load-balancer-ssl-cert"
+      value = aws_acm_certificate_validation.apps.certificate_arn
+    },
+    {
+      name  = "controller.service.annotations.service\\.beta\\.kubernetes\\.io/aws-load-balancer-ssl-ports"
+      value = "https"
+    },
+    {
+      name  = "controller.service.annotations.service\\.beta\\.kubernetes\\.io/aws-load-balancer-backend-protocol"
+      value = "http"
+    },
+    {
+      name  = "controller.service.annotations.external-dns\\.alpha\\.kubernetes\\.io/hostname"
+      value = var.apps_domain
+    },
+    {
+      name  = "controller.service.annotations.service\\.beta\\.kubernetes\\.io/aws-load-balancer-ssl-negotiation-policy"
+      value = "ELBSecurityPolicy-2016-08"
+    },
+    {
+      name  = "controller.service.ports.http"
+      value = "80"
+    },
+    {
+      name  = "controller.service.ports.https"
+      value = "443"
+    }
+    ,
+    {
+      name  = "controller.service.targetPorts.http"
+      value = "http"
+    },
+    {
+      name  = "controller.service.targetPorts.https"
+      value = "http"
+    }
+  ]
+
+  depends_on = [
+    kubernetes_namespace_v1.ingress_nginx,
+    aws_acm_certificate_validation.apps
+  ]
+}
+
+
 resource "aws_iam_policy" "external_dns" {
   name        = "${var.project}-external-dns"
   description = "Policy for ExternalDNS to manage Route53 records"
