@@ -32,3 +32,13 @@ variable "subnet_ids" {
   type        = list(string)
 
 }
+
+variable "vpc_id" {
+  description = "ID da VPC"
+  type        = string
+}
+
+variable "vpc_cidr_block" {
+  description = "CIDR da VPC para liberar acesso ao RDS"
+  type        = string
+}

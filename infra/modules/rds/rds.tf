@@ -11,6 +11,33 @@ resource "aws_db_subnet_group" "default" {
   )
 }
 
+resource "aws_security_group" "rds" {
+  name        = "${var.prefix}-rds-sg"
+  description = "Allow Postgres access from VPC"
+  vpc_id      = var.vpc_id
+
+  ingress {
+    from_port   = 5432
+    to_port     = 5432
+    protocol    = "tcp"
+    cidr_blocks = [var.vpc_cidr_block]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = merge(
+    var.tags,
+    {
+      Name = "${var.prefix}-rds-sg"
+    }
+  )
+}
+
 resource "aws_db_instance" "default" {
   for_each = { for db in var.dbs_config : db.name => db }
 
@@ -25,6 +52,7 @@ resource "aws_db_instance" "default" {
   skip_final_snapshot         = true
 
   db_subnet_group_name = aws_db_subnet_group.default.name
+  vpc_security_group_ids = [aws_security_group.rds.id]
 
   tags = merge(
     var.tags,
