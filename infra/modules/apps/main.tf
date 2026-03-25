@@ -59,26 +59,22 @@ resource "kubernetes_manifest" "apps_ingress" {
       name      = "${each.value.name}-ingress"
       namespace = each.value.namespace
       annotations = {
-        "alb.ingress.kubernetes.io/group.name"        = var.apps_alb_group_name
-        "alb.ingress.kubernetes.io/scheme"            = "internet-facing"
-        "alb.ingress.kubernetes.io/target-type"       = "ip"
-        "alb.ingress.kubernetes.io/listen-ports"      = "[{\"HTTPS\":443}]"
-        "alb.ingress.kubernetes.io/ssl-redirect"      = "443"
-        "alb.ingress.kubernetes.io/backend-protocol"  = "HTTP"
-        "alb.ingress.kubernetes.io/healthcheck-path"  = "/health"
-        "alb.ingress.kubernetes.io/certificate-arn"   = var.apps_certificate_arn
+        "nginx.ingress.kubernetes.io/use-regex"       = "true"
+        "nginx.ingress.kubernetes.io/rewrite-target"  = "/$2"
+        "nginx.ingress.kubernetes.io/proxy-read-timeout"  = "60"
+        "nginx.ingress.kubernetes.io/proxy-send-timeout"  = "60"
         "external-dns.alpha.kubernetes.io/hostname"   = var.apps_domain
       }
     }
     spec = {
-      ingressClassName = "alb"
+      ingressClassName = var.ingress_class_name
       rules = [
         {
           host = var.apps_domain
           http = {
             paths = [
               {
-                path     = each.value.path_prefix
+                path     = "${each.value.path_prefix}(/|$)(.*)"
                 pathType = "Prefix"
                 backend = {
                   service = {

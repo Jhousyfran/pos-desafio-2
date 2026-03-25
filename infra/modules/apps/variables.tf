@@ -31,13 +31,8 @@ variable "apps_domain" {
   type        = string
 }
 
-variable "apps_certificate_arn" {
-  description = "ARN do certificado ACM para o host das apps"
+variable "ingress_class_name" {
+  description = "IngressClass usado pelas apps"
   type        = string
-}
-
-variable "apps_alb_group_name" {
-  description = "Nome do grupo do ALB para compartilhar o mesmo load balancer"
-  type        = string
-  default     = "desafio"
+  default     = "nginx"
 }
