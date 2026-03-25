@@ -378,6 +378,31 @@ resource "helm_release" "external_secrets" {
   ]
 }
 
+resource "helm_release" "keda" {
+  name       = "keda"
+  repository = "https://kedacore.github.io/charts"
+  chart      = "keda"
+  version    = "2.15.0"
+  namespace  = "keda"
+
+  set = [
+    {
+      name  = "crds.install"
+      value = "true"
+    }
+  ]
+
+  depends_on = [
+    kubernetes_namespace_v1.keda
+  ]
+}
+
+resource "kubernetes_namespace_v1" "keda" {
+  metadata {
+    name = "keda"
+  }
+}
+
 resource "kubernetes_manifest" "external_secrets_cluster_store" {
   manifest = {
     apiVersion = "external-secrets.io/v1beta1"
