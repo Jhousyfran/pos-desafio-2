@@ -15,17 +15,17 @@ spec:
       labels:
         app: evaluation-service
     spec:
-          containers:
-            - name: evaluation-service
-              image: 629617923234.dkr.ecr.us-east-1.amazonaws.com/evaluation-service:latest
-              imagePullPolicy: Always
-              resources:
-                requests:
-                  cpu: "100m"
-                  memory: "100Mi"
-                limits:
-                  cpu: "200m"
-                  memory: "250Mi"
+      containers:
+        - name: evaluation-service
+          image: 629617923234.dkr.ecr.us-east-1.amazonaws.com/evaluation-service:latest
+          imagePullPolicy: Always
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "100Mi"
+            limits:
+              cpu: "200m"
+              memory: "250Mi"
           ports:
             - containerPort: 8004
           envFrom:
