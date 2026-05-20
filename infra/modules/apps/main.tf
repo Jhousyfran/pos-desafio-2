@@ -59,11 +59,11 @@ resource "kubernetes_manifest" "apps_ingress" {
       name      = "${each.value.name}-ingress"
       namespace = each.value.namespace
       annotations = {
-        "nginx.ingress.kubernetes.io/use-regex"       = "true"
-        "nginx.ingress.kubernetes.io/rewrite-target"  = "/$2"
-        "nginx.ingress.kubernetes.io/proxy-read-timeout"  = "60"
-        "nginx.ingress.kubernetes.io/proxy-send-timeout"  = "60"
-        "external-dns.alpha.kubernetes.io/hostname"   = var.apps_domain
+        "nginx.ingress.kubernetes.io/use-regex"          = "true"
+        "nginx.ingress.kubernetes.io/rewrite-target"     = "/$2"
+        "nginx.ingress.kubernetes.io/proxy-read-timeout" = "60"
+        "nginx.ingress.kubernetes.io/proxy-send-timeout" = "60"
+        "external-dns.alpha.kubernetes.io/hostname"      = var.apps_domain
       }
     }
     spec = {

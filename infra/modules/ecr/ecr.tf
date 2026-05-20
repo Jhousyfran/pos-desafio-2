@@ -11,4 +11,5 @@ resource "aws_ecr_repository" "ecr_repo" {
       Name = "${each.value}"
     }
   )
+  force_delete = true
 }
