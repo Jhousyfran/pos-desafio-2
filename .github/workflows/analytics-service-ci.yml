@@ -148,5 +148,17 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add "${SERVICE_DIR}/k8s/deployment.yaml"
-          git diff --cached --quiet || git commit -m "ci(${SERVICE_DIR}): update image tag to ${{ steps.vars.outputs.tag }}"
-          git push
+          if git diff --cached --quiet; then
+            echo "No manifest changes to commit."
+            exit 0
+          fi
+          git commit -m "ci(${SERVICE_DIR}): update image tag to ${{ steps.vars.outputs.tag }}"
+          for i in 1 2 3; do
+            git pull --rebase origin main
+            if git push origin HEAD:main; then
+              exit 0
+            fi
+            sleep 2
+          done
+          echo "Failed to push manifest update after retries."
+          exit 1
