@@ -44,11 +44,28 @@ Esse repositório reúne a solução da **Fase 2 do Tech Challenge**: transforma
    - AWS configurada com credenciais (permissões completas).  
    - Terraform 1.5+, kubectl, AWS CLI, Helm e Docker.
 
-2. **Infra**  
+2. **Infra (bootstrap do zero em 3 fases)**  
+   Em ambiente novo, o provider Kubernetes/Helm pode tentar usar `http://localhost:80` antes do EKS existir. Para evitar isso, faça o bootstrap abaixo:
    ```bash
    cd infra
    terraform init
-   terraform plan
+   terraform apply \
+     -target=module.network \
+     -target=module.eks_cluster \
+     -target=module.managed_node_group
+   ```
+   Depois configure o acesso ao cluster e valide:
+   ```bash
+   aws eks update-kubeconfig --region us-east-1 --name terraform-eks-setup-cluster
+   kubectl get nodes
+   ```
+   Com o cluster acessível, aplique o restante:
+   ```bash
+   terraform apply
+   ```
+   Se aparecer erro de CRD do External Secrets (`no matches for kind "ClusterSecretStore" in group "external-secrets.io"`), aplique em duas etapas:
+   ```bash
+   terraform apply -target=module.addons-eks.helm_release.external_secrets
    terraform apply
    ```
    Defina `infra/terraform.tfvars` com `argocd_server_addr`, `argocd_auth_token`, `apps_domain`, `route53_zone_id` e `argocd_repo_url`.
@@ -71,5 +88,24 @@ Esse repositório reúne a solução da **Fase 2 do Tech Challenge**: transforma
 - **Escalabilidade**: os serviços críticos têm HPAs, e o `analytics-service` usa KEDA para escalar de 0 para N.  
 - **Domínio**: `desafio.jhousyfran.click` mapeia `/auth`, `/flag`, `/targeting`, `/evaluation` e `/analytics`.  
 - **Fluxo de uso**: admin gera chave no `auth-service`; `flag-service` e `targeting-service` usam essa chave protegida; `evaluation-service` chama `flag` e `targeting` internamente; `analytics-service` consome SQS e escreve no DynamoDB.
+
+## Troubleshooting rápido
+
+- **Erro `dial tcp 127.0.0.1:80` no provider Kubernetes/Helm**  
+  Siga o bootstrap em 3 fases (targets EKS base -> `update-kubeconfig` -> apply completo).
+- **Erro `no matches for kind "ClusterSecretStore"`**  
+  Execute:
+  ```bash
+  terraform apply -target=module.addons-eks.helm_release.external_secrets
+  terraform apply
+  ```
+- **Erro de webhook `aws-load-balancer-webhook-service` sem endpoints**  
+  Esse erro ocorre quando `addons-eks` inicia antes do `aws-load-balancer-controller` estar pronto.  
+  Fluxo recomendado:
+  ```bash
+  terraform apply -target=module.eks_loadbalancer_controller
+  kubectl -n kube-system get pods -l app.kubernetes.io/name=aws-load-balancer-controller
+  terraform apply
+  ```
 
 Para detalhes sobre a proposta original, veja o PDF `POSTECH - Tech Challenge - Fase 2.pdf` na raiz.

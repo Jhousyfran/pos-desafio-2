@@ -69,3 +69,9 @@ variable "argocd_repo_url" {
   description = "Repositorio Git com os manifests das apps"
   type        = string
 }
+
+variable "enable_argocd_apps" {
+  description = "Habilita a criacao das Applications no ArgoCD via provider argocd"
+  type        = bool
+  default     = false
+}

@@ -157,6 +157,9 @@ module "addons-eks" {
   source  = "./modules/addons-eks"
   project = var.project
   tags    = local.tags
+  depends_on = [
+    module.eks_loadbalancer_controller
+  ]
 
   eks_cluster_name = module.eks_cluster.eks_cluster_name
   oidc             = module.eks_cluster.oidc
@@ -166,6 +169,7 @@ module "addons-eks" {
 }
 
 module "apps" {
+  count  = var.enable_argocd_apps ? 1 : 0
   source = "./modules/apps"
 
   argocd_repo_url = var.argocd_repo_url
