@@ -404,6 +404,8 @@ resource "kubernetes_namespace_v1" "keda" {
 }
 
 resource "kubernetes_manifest" "external_secrets_cluster_store" {
+  count = var.enable_external_secrets_cluster_store ? 1 : 0
+
   manifest = {
     apiVersion = "external-secrets.io/v1beta1"
     kind       = "ClusterSecretStore"

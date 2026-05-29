@@ -75,3 +75,9 @@ variable "enable_argocd_apps" {
   type        = bool
   default     = false
 }
+
+variable "enable_external_secrets_cluster_store" {
+  description = "Habilita a criacao do ClusterSecretStore do External Secrets"
+  type        = bool
+  default     = true
+}

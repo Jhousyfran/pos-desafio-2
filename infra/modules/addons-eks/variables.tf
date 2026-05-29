@@ -36,3 +36,9 @@ variable "apps_domain" {
   description = "Dominio completo para as apps (ex: desafio.exemplo.com)"
   type        = string
 }
+
+variable "enable_external_secrets_cluster_store" {
+  description = "Controla a criacao do ClusterSecretStore do External Secrets"
+  type        = bool
+  default     = true
+}

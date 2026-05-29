@@ -53,10 +53,13 @@ provider "helm" {
 locals {
   argocd_server_addr_raw = replace(replace(var.argocd_server_addr, "https://", ""), "http://", "")
   argocd_server_addr     = can(regex(":[0-9]+$", local.argocd_server_addr_raw)) ? local.argocd_server_addr_raw : "${local.argocd_server_addr_raw}:443"
+  # Avoid DNS/provider init failures when ArgoCD apps management is disabled (e.g. during destroy).
+  argocd_server_addr_effective = var.enable_argocd_apps ? local.argocd_server_addr : "127.0.0.1:443"
+  argocd_auth_token_effective  = var.enable_argocd_apps ? var.argocd_auth_token : "disabled"
 }
 
 provider "argocd" {
-  server_addr = local.argocd_server_addr
-  auth_token  = var.argocd_auth_token
+  server_addr = local.argocd_server_addr_effective
+  auth_token  = local.argocd_auth_token_effective
   insecure    = var.argocd_insecure
 }

@@ -166,6 +166,7 @@ module "addons-eks" {
   route53_zone_id  = var.route53_zone_id
   argocd_domain    = var.argocd_domain
   apps_domain      = var.apps_domain
+  enable_external_secrets_cluster_store = var.enable_external_secrets_cluster_store
 }
 
 module "apps" {

@@ -82,6 +82,28 @@ Esse repositório reúne a solução da **Fase 2 do Tech Challenge**: transforma
 5. **Teste o cluster**  
    Rode `bash test-flow-eks.sh` para usar as novas URLs e validar toda a cadeia (auth → flag → targeting → evaluation).
 
+## Makefile (apply/destroy seguro)
+
+Para evitar os bloqueios que encontramos (provider ArgoCD por DNS, webhook/CRD do External Secrets e namespaces travando no destroy), use os alvos abaixo:
+
+```bash
+make tf-init
+make apply-safe
+make destroy-safe
+```
+
+Resumo dos alvos:
+
+- `make tf-init`: roda `terraform init` em `infra/`.
+- `make apply-safe`: aplica em duas etapas com proteções:
+  - `enable_argocd_apps=false`
+  - `enable_external_secrets_cluster_store=false`
+  - depois faz um `apply` completo.
+- `make destroy-safe`: teardown em 2 fases (recomendado):
+  - primeiro aplica com as duas flags desabilitadas
+  - depois roda `terraform destroy`.
+- `make destroy-check`: lista o que ainda ficou no state.
+
 ## Observações finais
 
 - **Security**: todos os secrets passam pelo External Secrets + IAM/IRSA.  
